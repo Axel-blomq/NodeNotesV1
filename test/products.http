@@ -1,0 +1,39 @@
+
+@apiURL=https://fw-teaching.fi/demo/rest/api/v1
+
+### GET products
+GET {{apiURL}}/products/
+
+### GET single product
+GET {{apiURL}}/products/1001
+
+### POST products
+POST {{apiURL}}/products/
+Content-Type: application/json
+
+{
+    "name": "shoes",
+    "price": 55
+}
+
+### PUT product
+PUT {{apiURL}}/products/1001
+Content-Type: application/json
+
+{
+    "name": "Dress",
+    "price": 85
+}
+
+### PATCH product
+PATCH {{apiURL}}/products/1001
+Content-Type: application/json
+
+{
+    "price": 99
+}
+
+### DELETE product
+DELETE {{apiURL}}/products/1002
+
+

@@ -1,0 +1,44 @@
+#main > *{
+    float: left;
+}
+.noteContainer{
+    width: 90%;
+    background-color: yellow;
+    color: black;
+    font-size: medium;
+    margin: 5px;
+    padding-top: 2px;
+    padding-bottom: 3px;
+    padding-right: 5px;
+    border: 2px solid black;
+}
+.others-notes > .noteContainer{
+    background-color: yellowgreen;
+}
+.note-in{
+    width: 100%;
+}
+#your-notes{
+    width: 30%;
+    margin-right: 10px;
+}
+#everyone-eles-notes{
+    width: 60%;
+}
+.others-notes{
+    width: 50%;
+}
+
+@media screen and (max-width: 600px){
+    #your-notes{
+        width: 100%;
+        margin-right: 0px;
+    }
+    #everyone-eles-notes{
+        width: 100%;
+    }
+    .others-notes{
+        width: 45%;
+    }
+}
+

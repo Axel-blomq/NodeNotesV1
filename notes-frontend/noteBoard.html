@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div>
+        <button type="button" id="saver" onclick="save()">save changes to db</button><br>
+        <input type="number" id="BoardSelec" placeholder="enter board number here">
+        <button type="button" id="boardConfirm" onclick="getBoard()">hop to this board</button>
+    </div>
+<div id="main">
+    <div id="your-notes">
+        <input type="hidden" id="userid" value="44">
+        <!-- create a note container for each note you have -->
+        <div class="noteContainer">
+            <!-- make inputs value with the notes text & id  -->
+            <input type="hidden" class="note-id" value="6fe4cca1a06d4720b20567ee">
+            <p><textarea class="note-in" rows="4" cols="50">testingText</textarea></p>
+        </div>
+        <div class="noteContainer">
+            <!-- make inputs value with the notes text & id  -->
+            <input type="hidden" class="note-id" value="6fe4cca1a06d4720b20567ee">
+            <p><textarea class="note-in" rows="4" cols="50">testingText222s</textarea></p>
+        </div>
+    </div>
+    <div id="everyone-eles-notes">
+        <!-- create "others-notes" for each user that isnt you -->
+        <div class="others-notes">
+            <h3>Sample uid's notes</h3>
+            <!-- create "noteContainer" for each note -->
+            <div class="noteContainer">
+            <!-- fill <p> with the notes text -->
+                <p class="note-other">some othe users sample text</p>
+            </div>
+            <div class="noteContainer">
+                <!-- fill <p> with the notes text -->
+                <p class="note-other">some othe users sample text</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+    <script>
+        const API_URL = "http://localhost:8080";
+        let selBoardID = 0;
+        let jwtToken;
+
+        if(localStorage.getItem("ws_token") == null){
+            alert("Please login first");
+            window.location.href = "./index.html"
+        }
+        else{
+            jwtToken = localStorage.getItem("ws_token");
+        }
+
+        async function getBoard(){
+            //this doesnt even do anything cool it just updates an internal variable...
+            selBoardID = document.getElementById("BoardSelec").value
+            console.log("the board has changed")
+        }
+
+        async function initNotes(){
+            //no content in this request since it gets all information needed from elsewhere
+            //it just needs to run to get the data...
+            const response = await fetch(`${API_URL}/notes`, {
+                method: "GET",
+                headers: {"Authorization": "Bearer " + jwtToken}
+            });
+            console.log(response.note);
+
+            let yourNotes = await response.json();
+            let html = `<input type="hidden" id="userid" value="${yourNotes.uname}"><br><h5>welcome ${yourNotes.uname}</h5>`;
+            yourNotes.notes.forEach(x => {
+                html += `<div class="noteContainer">
+                <input type="hidden" class="note-id" value=${x.id}>
+                <textarea class="note-in" rows="4" cols="50">${x.note}</textarea>
+                </div>`
+            });
+            document.getElementById("your-notes").innerHTML = html;
+            //then add triggers to them
+            addTriggers();
+        }
+
+        async function updateNote(noteData){
+            const response = await fetch(`${API_URL}/notes/${noteData.id}`, {
+                method: "PUT",
+                headers: { "Authorization": "Bearer " + jwtToken, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "note": noteData.note
+                })         
+            });
+        }
+        
+        async function newNote(){
+            const response = await fetch(`${API_URL}/notes`, {
+                method: "POST",
+                headers: { "Authorization": "Bearer " + jwtToken, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "note": noteData.note
+                })         
+            });
+            console.log("new note success");
+            document.getElementById
+        }
+
+        WS_TOKEN = localStorage.getItem('ws_token') || 'my-secret-token';
+        console.log(WS_TOKEN);
+
+        // Create a WebSocket connection
+        const socket = new WebSocket(`ws://localhost:8081?token=${WS_TOKEN}`);
+
+        // Connection established 
+        socket.onopen = function (event) {
+            console.log('Connected to WebSocket server');
+            //run the script that gets your notes...
+            initNotes();
+        };
+
+        // Message listener
+        socket.onmessage = function (event) {
+            console.log('Received message:', event.data);
+            const data = JSON.parse(event.data);
+
+            //id: 1 used for getting data about others notes
+            if(data.id == 1){
+                //stolen from: https://stackoverflow.com/questions/5629684/how-can-i-check-if-an-element-exists-in-the-visible-dom
+                let elementExists = document.getElementById(`${data.userid}`);
+                let othersNotes = data.notes;
+
+                if (elementExists != null){
+                    //the element was already created, just fill with new data
+                    let html = `<h3>${data.userid}'s notes</h3>`
+                    othersNotes.forEach(note => {
+                        html += `
+                        <div class="noteContainer">
+                            <p class="note-other">${note}</p>
+                        </div>
+                        `
+                    });
+                    document.getElementById(`${data.userid}`).innerHTML = html;
+                }
+                else{
+                //the element does Not exist, create and fill it.
+                let html = `<div class="others-notes" id="${data.userid}">
+                    <h3>${data.userid}'s notes</h3>`;
+                othersNotes.forEach(note => {
+                   html += `<div class="noteContainer">
+                        <p class="note-other">${note}</p>
+                    </div>` 
+                });
+                html += "</div>";
+                document.getElementById("everyone-eles-notes").innerHTML += html;
+                }
+
+            }
+            else if(data.id == 80){
+                //just placeholder feedback from the WS server
+                //nothing wrong here, for now
+            }
+            else if(data.id == 3){
+                //set the board id... i mean its already set just confirming that it works.
+                document.getElementById("everyone-eles-notes").innerHTML = "";
+                console.log("hopp, sucesss");
+            }
+            else{
+                console.log("ID string sent unaccounted for");
+                console.log(data);
+            }
+            
+        };
+
+        // Connection closed 
+        socket.onclose = function (event) {
+            console.log('Connection closed');
+        };
+
+        //send updates to other clients
+        function addTriggers(){
+            let inputs = document.getElementsByClassName("note-in")
+            console.log(inputs.length)
+
+            for (let i = 0; i < inputs.length; i++) {
+
+                inputs[i].addEventListener('input', (evt) => {
+
+                let uid = document.getElementById("userid").value
+                let notes = document.getElementsByClassName("note-in")
+                
+                console.log(notes);
+                console.log("this is doing something");
+                let notesData = [];
+
+                for (let i = 0; i < notes.length; i++) {
+                    notesData.push(notes[i].value)
+                    console.log(notes[i].value)
+                }
+
+                let NotStringData = {notes: notesData, userid: uid, boardid: selBoardID}
+
+                let data = JSON.stringify(NotStringData);
+
+                socket.send(data);
+                });
+                
+            };
+        }
+
+        //send updates to db
+        function save() {
+            let noteids = document.getElementsByClassName("note-id")
+            let notes = document.getElementsByClassName("note-in")
+            console.log(notes);
+            let Data;
+
+            for (let i = 0; i < notes.length; i++) {
+                Data = {id: noteids[i].value, note: notes[i].value};
+                console.log(noteids[i].value)
+                console.log(notes[i].value)
+                updateNote(Data);
+            }
+        }
+    
+    </script>
+
+</body>
+</html>

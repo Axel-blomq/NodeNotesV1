@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes</title>
+</head>
+<body>
+    <p>Login:</p>
+    <input id="login-uname" type="text" placeholder="Användarnamn"><br>
+    <input id="login-pass" type="password" placeholder="Lösenord">
+    <input id="btn-login" type="button" value="Logga in">
+    <br>
+    <br>
+    <p>New User?</p>
+    <input id="reg-uname" type="text" placeholder="Användarnamn"><br>
+    <input id="reg-email" type="text" placeholder="E-mail"><br>
+    <input id="reg-pass" type="password" placeholder="Lösenord">
+
+    <input id="btn-reg" type="button" value="Register">
+
+    <script>
+        const API_URL = "http://localhost:8080";
+
+        //login
+        async function logIn(user, pass) {
+            console.log(user, pass);
+
+            const response = await fetch(`${API_URL}/users/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "email": user,
+                    "password": pass
+                })         
+            });
+
+            respData = await response.json();
+            
+            if(respData.jwt != null){
+                //send to the board
+                localStorage.setItem("ws_token", respData.jwt);
+                console.log(respData.jwt);
+
+                window.location.href = "./noteBoard.html"
+
+            }
+            else{
+                //probably Errrr
+                console.log(respData + "ERRRRROOOOORRRRRR");
+            }
+        }
+
+        document.querySelector('#btn-login').addEventListener('click', () => {
+            const user = document.querySelector('#login-uname').value;
+            const pass = document.querySelector('#login-pass').value;
+
+            logIn(user, pass);   
+        });
+
+        //register
+        async function Reg(user, email, pass) {
+            console.log(user, pass, email);
+
+            const response = await fetch(`${API_URL}/users/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "email": email,
+                    "name": user,
+                    "password": pass
+                })         
+            });
+
+            respData = await response.json();
+            console.log(respData);
+            console.log("good job, you are now a new user, please log in")
+        }
+        document.querySelector('#btn-reg').addEventListener('click', () => {
+            const user = document.querySelector('#reg-uname').value;
+            const pass = document.querySelector('#reg-pass').value;
+            const email = document.querySelector('#reg-email').value;
+
+            Reg(user, email, pass);     
+        });
+    </script>
+
+</body>
+</html>
