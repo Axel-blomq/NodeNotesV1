@@ -6,13 +6,13 @@
     <title>Notes</title>
 </head>
 <body>
-    <p>Login:</p>
+    <h5>Login:</h5>
     <input id="login-uname" type="text" placeholder="Användarnamn"><br>
     <input id="login-pass" type="password" placeholder="Lösenord">
     <input id="btn-login" type="button" value="Logga in">
     <br>
     <br>
-    <p>New User?</p>
+    <h5>New User?</h5>
     <input id="reg-uname" type="text" placeholder="Användarnamn"><br>
     <input id="reg-email" type="text" placeholder="E-mail"><br>
     <input id="reg-pass" type="password" placeholder="Lösenord">
@@ -37,7 +37,7 @@
 
             respData = await response.json();
             
-            if(respData.jwt != null){
+            if(respData.jwt != "" && respData.jwt != null){
                 //send to the board
                 localStorage.setItem("ws_token", respData.jwt);
                 console.log(respData.jwt);

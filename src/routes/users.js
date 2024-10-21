@@ -60,7 +60,7 @@ router.post('/login', async (req, res) => {
 })
 
 // Get för att få min egen användares data (enligt jwt)
-router.get('/profile', authorize, async (req, res) => {
+router.get('/profile', async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
             where: {

@@ -11,6 +11,7 @@
         <button type="button" id="saver" onclick="save()">save changes to db</button><br>
         <input type="number" id="BoardSelec" placeholder="enter board number here">
         <button type="button" id="boardConfirm" onclick="getBoard()">hop to this board</button>
+        <button type="button" id="NoteAddNew" onclick="newNote()">add a new note</button>
     </div>
 <div id="main">
     <div id="your-notes">
@@ -29,18 +30,6 @@
     </div>
     <div id="everyone-eles-notes">
         <!-- create "others-notes" for each user that isnt you -->
-        <div class="others-notes">
-            <h3>Sample uid's notes</h3>
-            <!-- create "noteContainer" for each note -->
-            <div class="noteContainer">
-            <!-- fill <p> with the notes text -->
-                <p class="note-other">some othe users sample text</p>
-            </div>
-            <div class="noteContainer">
-                <!-- fill <p> with the notes text -->
-                <p class="note-other">some othe users sample text</p>
-            </div>
-        </div>
 
     </div>
 </div>
@@ -101,11 +90,11 @@
                 method: "POST",
                 headers: { "Authorization": "Bearer " + jwtToken, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    "note": noteData.note
+                    "note": "New client created Note"
                 })         
             });
-            console.log("new note success");
-            document.getElementById
+            alert("new note successfully created, reloading site");
+            window.location.reload();
         }
 
         WS_TOKEN = localStorage.getItem('ws_token') || 'my-secret-token';
@@ -133,7 +122,7 @@
                 let othersNotes = data.notes;
 
                 if (elementExists != null){
-                    //the element was already created, just fill with new data
+                    //the element was already created, just fill with the new data
                     let html = `<h3>${data.userid}'s notes</h3>`
                     othersNotes.forEach(note => {
                         html += `

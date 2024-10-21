@@ -2,15 +2,45 @@
   "name": "wom24-exempel",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.js",
+  "main": "./main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx prisma generate && node src/server.js",
-    "dev": "npx prisma generate && nodemon -L src/server.js"
+    "start": "electron-forge start",
+    "dev": "npx prisma generate && nodemon -L src/server.js",
+    "electron": "electron .",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
-  "author": "",
+  "build": {
+    "appId": "Axel.Nodenotes.App",
+    "productName": "NodeNotes",
+    "directories": {
+      "output": "NodeNotes-EXE"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "files": [
+      "build/**/*",
+      "../node_modules/**/*",
+      "main.js",
+      "index.html",
+      "noteBoard.html"
+    ]
+  },
+  "author": "Axel",
   "license": "ISC",
   "devDependencies": {
+    "@electron-forge/cli": "^7.5.0",
+    "@electron-forge/maker-deb": "^7.5.0",
+    "@electron-forge/maker-rpm": "^7.5.0",
+    "@electron-forge/maker-squirrel": "^7.5.0",
+    "@electron-forge/maker-zip": "^7.5.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.5.0",
+    "@electron-forge/plugin-fuses": "^7.5.0",
+    "@electron/fuses": "^1.8.0",
+    "electron": "^33.0.1",
+    "electron-packager": "^17.1.2",
     "nodemon": "^3.1.4",
     "prisma": "^5.19.1"
   },
@@ -19,6 +49,7 @@
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "electron-squirrel-startup": "^1.0.1",
     "express": "^4.21.0",
     "jsonwebtoken": "^9.0.2",
     "ws": "^8.18.0"
